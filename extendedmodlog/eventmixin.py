@@ -1248,9 +1248,11 @@ class EventMixin:
                                 continue
                             else:
                                 for role in removed_roles:
-                                    if role.id in log_added:
+                                    if role.id in log_removed:
                                         entry = log
                                         # this may be the correct log entry
+                        if added_roles or removed_roles:
+                            continue
 
                     if target_id == getattr(log.target, "id", None) and entry is None:
                         logger.trace("Found entry through cache")
@@ -1300,9 +1302,11 @@ class EventMixin:
                                 # This entry matches identically
                             else:
                                 for role in removed_roles:
-                                    if role.id in log_added:
+                                    if role.id in log_removed:
                                         entry = log
                                         # this may be the correct log entry
+                        if added_roles or removed_roles:
+                            continue
                     if target_id == getattr(log.target, "id", None) and entry is None:
                         logger.trace("Found entry through fetch")
                         entry = log
