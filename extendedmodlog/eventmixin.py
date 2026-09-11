@@ -1314,7 +1314,7 @@ class EventMixin:
                     if target_id == getattr(log.target, "code", None):
                         logger.trace("Found invite code entry through fetch")
                         entry = log
-        logger.info("Returning %s reason", entry.reason if entry is not None else None)
+        logger.debug("Returning %s reason", entry.reason if entry is not None else None)
         return entry
 
     @commands.Cog.listener()
