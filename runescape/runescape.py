@@ -8,7 +8,8 @@ from red_commons.logging import getLogger
 from redbot import VersionInfo, version_info
 from redbot.core import Config, commands
 from redbot.core.bot import Red
-from redbot.core.utils.chat_formatting import box
+from redbot.core.utils.chat_formatting import box, pagify
+from redbot.core.utils.views import SimpleMenu
 
 from .menus import BaseMenu, GEChartPages, GESinglePages
 from .profile import (
@@ -563,7 +564,9 @@ class Runescape(commands.Cog):
 
     @osrs.command(name="activities")
     @commands.bot_has_permissions(embed_links=True)
-    async def osrs_activities(self, ctx: commands.Context, *, runescape_name: str = None) -> None:
+    async def osrs_activities(
+        self, ctx: commands.Context, *, runescape_name: Optional[str] = None
+    ) -> None:
         """Display a players Activities in oldschool Runescape Hiscores."""
         async with ctx.typing():
             if runescape_name is None:
@@ -578,8 +581,16 @@ class Runescape(commands.Cog):
                 await ctx.send(f"I can't find username `{runescape_name}`")
                 return
             msg = await profile.get_profile_table()
-            em = discord.Embed(description=box(msg, lang="css"), colour=await ctx.embed_colour())
-        await ctx.send(embed=em)
+            embeds = []
+            for page in pagify(msg, delims=["\n"], page_length=1024):
+                embeds.append(
+                    discord.Embed(
+                        description=box(page, lang="css"),
+                        colour=await ctx.embed_colour(),
+                    )
+                )
+
+        await SimpleMenu(embeds).start(ctx)
 
     @osrs.command(name="set")
     async def osrs_set(
